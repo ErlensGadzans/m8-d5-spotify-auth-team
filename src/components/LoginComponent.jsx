@@ -4,9 +4,29 @@ import logo from "../logo/Spotify_Logo_Black.png";
 import fb from "../logo/fb.png";
 import "bootstrap/dist/css/bootstrap.min.css";
 import useForm from "./UseForm"; // IMPORTING THE COMPONENT WITH HOOKS
+import axios from "axios";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
 
-const SignUp = () => {
-  const { handleChange, values, handleSubmit } = useForm(); // DESTRUCTURING HOOKS TO BE ABLE TO USE THEM IN THIS COMPONENT
+const LoginComponent = (props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const history = useHistory();
+
+  const login = async () => {
+    const res = await axios("http://localhost:3007/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        email,
+        password,
+      },
+    });
+    localStorage.setItem("accessToken", res.data.accessToken);
+  };
+
   return (
     <Container fluid id="signup-page-wrapper">
       <div className="sign-logo-wrapper">
@@ -22,16 +42,16 @@ const SignUp = () => {
       </div>
       <h6>OR</h6>
       <div className="form-inputs">
-        <form className="form" onSubmit={handleSubmit}>
-          <label>Email addess or username</label>
+        <form className="form">
+          <label>Email addess</label>
           <input
             className="form-input"
             id="email" // WITH THIS ID IT CHECKS IF IT'S A VALID EMAIL
             name="email"
             type="email"
             placeholder="Email adress or username"
-            value={values.email} // TAKES THE VALUE FROM MY CUSTOM HOOKS IN USEFORM COMPONENT
-            onChange={handleChange} // THE FUNCTION THAT LISTENS TO THE CHANGE OF THE VALUE
+            value={email} // TAKES THE VALUE FROM MY CUSTOM HOOKS IN USEFORM COMPONENT
+            onChange={(e) => setEmail(e.target.value)} // THE FUNCTION THAT LISTENS TO THE CHANGE OF THE VALUE
           />
           <br />
           <label>Password</label>
@@ -40,24 +60,31 @@ const SignUp = () => {
             id="password"
             name="password"
             type="password"
-            placeholder="Password"
-            value={values.password}
-            onChange={handleChange}
+            placeholder="*********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <br />
           <a href="#"> Forgot your password? </a>
           <div className="submit-btn">
             <input type="checkbox" id="checkbox" className="my-auto" />
             <p className="ml-n5 my-auto">Remember me</p>
-            <input className="form-input-submit" type="submit" value="LOG IN" />
+            <input
+              className="form-input-submit"
+              type="submit"
+              value="LOG IN"
+              onClick={login}
+            />
           </div>
         </form>
         <hr />
         <h4 className="text-center mb-3">Don't have an account?</h4>
-        <button id="bottom-btn">SIGN UP FOR SPOTIFY</button>
+        <button id="bottom-btn" onClick={login} value="Login">
+          SIGN UP FOR SPOTIFY
+        </button>
       </div>
     </Container>
   );
 };
 
-export default SignUp;
+export default LoginComponent;
