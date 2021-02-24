@@ -11,10 +11,10 @@ import { useHistory } from "react-router-dom";
 const LoginComponent = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const history = useHistory();
-
-  const login = async () => {
+  const login = async (e) => {
+    e.preventDefault();
     const res = await axios("http://localhost:3007/users/login", {
+      //WHAT IS AXIOS THIS?
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,11 @@ const LoginComponent = (props) => {
         password,
       },
     });
-    localStorage.setItem("accessToken", res.data.accessToken);
+    console.log(res);
+    if (res.status === 200) {
+      localStorage.setItem("accessToken", res.data.accessToken);
+      props.history.push("/");
+    }
   };
 
   return (
